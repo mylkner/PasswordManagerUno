@@ -1,8 +1,6 @@
-using System.Threading.Tasks;
-
 namespace PasswordManager.Services;
 
-class DBService : IDBService
+public class DBService : IDBService
 {
     public bool VerifyMasterPassword(IState<string> masterPassword)
     {
