@@ -1,0 +1,10 @@
+{
+  "background_color": "#ffffff",
+  "description": "PasswordManager",
+  "display": "standalone",
+  "name": "PasswordManager",
+  "short_name": "PasswordManager",
+  "start_url": "/index.html",
+  "theme_color": "#ffffff",
+  "scope": "/"
+}
