@@ -28,12 +28,26 @@ public sealed partial class MainPage : Page
                                             ),
                                         new Button()
                                             .Grid(column: 1)
-                                            .Content("Verify")
+                                            .Width(100)
+                                            .Height(60)
+                                            .Content(
+                                                () => vm.Loading,
+                                                loading =>
+                                                    loading
+                                                        ? new ProgressRing()
+                                                            .Width(40)
+                                                            .Height(40)
+                                                            .Foreground(Colors.Black)
+                                                        : "Verify"
+                                            )
                                             .Command(() => vm.VerifyButtonCommand)
                                     ),
                                 new TextBlock()
                                     .Text(() => vm.VerificationResponse)
-                                    .Foreground(() => vm.VerificationResponseColor)
+                                    .Foreground(
+                                        () => vm.VerificationResponse,
+                                        res => res == "Success" ? Colors.Green : Colors.Red
+                                    )
                             )
                     )
         );

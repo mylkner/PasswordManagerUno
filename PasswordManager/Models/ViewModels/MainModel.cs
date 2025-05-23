@@ -5,35 +5,39 @@ public partial record MainModel(IDBService DBService, INavigator Navigator)
     private readonly INavigator _navigator = Navigator;
     public IState<string> MasterPassword => State<string>.Value(this, () => "");
     public IState<string> VerificationResponse => State<string>.Empty(this);
-    public IState<Color> VerificationResponseColor => State<Color>.Empty(this);
-    public IState<bool> Loading => State<bool>.Value(this, () => true);
+    public IState<bool> Loading => State<bool>.Value(this, () => false);
 
     public async ValueTask VerifyButtonCommand(CancellationToken ct)
     {
-        await Loading.UpdateAsync(cur => false, ct);
-        await UpdateVerRes(null, null, ct);
-        string? masterPassword = await MasterPassword;
+        async ValueTask SetLoading(bool isLoading) =>
+            await Loading.UpdateDataAsync(_ => isLoading, ct);
+        async ValueTask SetResponse(string? message) =>
+            await VerificationResponse.UpdateAsync(_ => message, ct);
 
-        if (masterPassword is null)
-        {
-            await UpdateVerRes("Password cannot be null", Colors.Red, ct);
-            return;
-        }
+        await SetLoading(true);
+        await SetResponse(null);
 
-        if (await DBService.VerifyMasterPassword(masterPassword, ct))
+        try
         {
-            await UpdateVerRes("Success", Colors.Green, ct);
+            string? masterPassword = await MasterPassword;
+            if (masterPassword is null)
+            {
+                await SetResponse("Password cannot be null");
+                return;
+            }
+
+            if (!await DBService.VerifyMasterPassword(masterPassword, ct))
+            {
+                await SetResponse("Error");
+                return;
+            }
+
+            await SetResponse("Success");
             await _navigator.NavigateRouteAsync(this, "Passwords", cancellation: ct);
         }
-        else
+        finally
         {
-            await UpdateVerRes("Error", Colors.Red, ct);
+            await SetLoading(false);
         }
-    }
-
-    private async ValueTask UpdateVerRes(string? message, Color? color, CancellationToken ct)
-    {
-        await VerificationResponse.UpdateAsync(current => message, ct);
-        await VerificationResponseColor.UpdateAsync(current => color, ct);
     }
 }
