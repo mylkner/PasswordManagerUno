@@ -1,4 +1,4 @@
-namespace PasswordManager.Models;
+namespace PasswordManager.Models.ViewModels;
 
 public partial record MainModel(IDBService DBService, INavigator Navigator)
 {
@@ -6,9 +6,11 @@ public partial record MainModel(IDBService DBService, INavigator Navigator)
     public IState<string> MasterPassword => State<string>.Value(this, () => "");
     public IState<string> VerificationResponse => State<string>.Empty(this);
     public IState<Color> VerificationResponseColor => State<Color>.Empty(this);
+    public IState<bool> Loading => State<bool>.Value(this, () => true);
 
     public async ValueTask VerifyButtonCommand(CancellationToken ct)
     {
+        await Loading.UpdateAsync(cur => false, ct);
         await UpdateVerRes(null, null, ct);
         string? masterPassword = await MasterPassword;
 
@@ -25,7 +27,7 @@ public partial record MainModel(IDBService DBService, INavigator Navigator)
         }
         else
         {
-            await UpdateVerRes("Error", Colors.Green, ct);
+            await UpdateVerRes("Error", Colors.Red, ct);
         }
     }
 

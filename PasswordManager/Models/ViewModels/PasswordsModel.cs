@@ -1,4 +1,4 @@
-namespace PasswordManager.Models;
+namespace PasswordManager.Models.ViewModels;
 
 public partial record PasswordsModel(IDBService DBService, IEncryptionService EncryptionService)
 {

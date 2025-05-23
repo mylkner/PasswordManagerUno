@@ -1,4 +1,4 @@
-namespace PasswordManager.Models;
+namespace PasswordManager.Models.ViewModels;
 
 public class ShellModel(INavigator navigator)
 {
