@@ -2,6 +2,6 @@ namespace PasswordManager.Services.Interfaces;
 
 public interface IDBService
 {
-    bool VerifyMasterPassword(IState<string> masterPassword);
+    ValueTask<bool> VerifyMasterPassword(string masterPassword, CancellationToken ct);
     ValueTask<IImmutableList<Password>> GetPasswords(CancellationToken ct);
 }

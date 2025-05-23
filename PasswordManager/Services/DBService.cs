@@ -2,8 +2,9 @@ namespace PasswordManager.Services;
 
 public class DBService : IDBService
 {
-    public bool VerifyMasterPassword(IState<string> masterPassword)
+    public async ValueTask<bool> VerifyMasterPassword(string masterPassword, CancellationToken ct)
     {
+        await Task.Delay(TimeSpan.FromSeconds(2), ct);
         return true;
     }
 

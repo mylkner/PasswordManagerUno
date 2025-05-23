@@ -19,7 +19,7 @@ public sealed partial class MainPage : Page
                                     .ColumnDefinitions("2*, *")
                                     .Children(
                                         new PasswordBox()
-                                            .Margin(4)
+                                            .Margin(0, 0, 5, 0)
                                             .Width(200)
                                             .PasswordRevealMode(PasswordRevealMode.Hidden)
                                             .PlaceholderText("Password...")
@@ -30,7 +30,10 @@ public sealed partial class MainPage : Page
                                             .Grid(column: 1)
                                             .Content("Verify")
                                             .Command(() => vm.VerifyButtonCommand)
-                                    )
+                                    ),
+                                new TextBlock()
+                                    .Text(() => vm.VerificationResponse)
+                                    .Foreground(() => vm.VerificationResponseColor)
                             )
                     )
         );
