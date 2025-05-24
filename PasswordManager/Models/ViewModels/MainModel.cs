@@ -1,6 +1,10 @@
 namespace PasswordManager.Models.ViewModels;
 
-public partial record MainModel(IDBService DBService, INavigator Navigator)
+public partial record MainModel(
+    IDBService DBService,
+    IEncryptionService EncryptionService,
+    INavigator Navigator
+)
 {
     private readonly INavigator _navigator = Navigator;
     public IState<string> MasterPassword => State<string>.Value(this, () => "");
@@ -32,7 +36,8 @@ public partial record MainModel(IDBService DBService, INavigator Navigator)
                 return;
             }
 
-            await SetResponse("Success");
+            await SetResponse("Success - Redirecting...");
+            await Task.Delay(TimeSpan.FromSeconds(2), ct);
             await _navigator.NavigateRouteAsync(this, "Passwords", cancellation: ct);
         }
         finally
