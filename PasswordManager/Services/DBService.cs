@@ -4,7 +4,13 @@ public class DBService : IDBService
 {
     public static bool DoesDbExist()
     {
-        return false;
+        return true;
+    }
+
+    public async ValueTask<bool> CreateDB(CancellationToken ct)
+    {
+        await Task.Delay(TimeSpan.FromSeconds(2), ct);
+        return true;
     }
 
     public async ValueTask<bool> VerifyMasterPassword(string masterPassword, CancellationToken ct)
