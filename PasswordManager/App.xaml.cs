@@ -63,6 +63,7 @@ public partial class App : Application
         views.Register(
             new ViewMap(ViewModel: typeof(ShellModel)),
             new ViewMap<MainPage, MainModel>(),
+            new ViewMap<CreateMasterPasswordPage, CreateMasterPasswordModel>(),
             new ViewMap<PasswordsPage, PasswordsModel>()
         );
 
@@ -72,7 +73,18 @@ public partial class App : Application
                 View: views.FindByViewModel<ShellModel>(),
                 Nested:
                 [
-                    new("Main", View: views.FindByViewModel<MainModel>(), IsDefault: true),
+                    new(
+                        "Main",
+                        View: views.FindByViewModel<MainModel>(),
+                        IsDefault: true,
+                        Init: (request) =>
+                        {
+                            if (DBService.DoesDbExist())
+                                request = request with { Route = Route.PageRoute("CreateMP") };
+                            return request;
+                        }
+                    ),
+                    new("CreateMP", View: views.FindByViewModel<CreateMasterPasswordModel>()),
                     new("Passwords", View: views.FindByViewModel<PasswordsModel>()),
                 ]
             )
