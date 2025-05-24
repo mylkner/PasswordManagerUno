@@ -11,20 +11,18 @@ public sealed partial class MainPage : Page
                         new Border()
                             .SafeArea(SafeArea.InsetMask.VisibleBounds)
                             .Child(
-                                new Grid()
-                                    .ColumnDefinitions("*, *")
-                                    .RowDefinitions("*, *, *")
-                                    .RowSpacing(6)
-                                    .ColumnSpacing(6)
+                                new StackPanel()
+                                    .MaxWidth(400)
+                                    .Spacing(10)
                                     .VerticalAlignment(VerticalAlignment.Center)
                                     .HorizontalAlignment(HorizontalAlignment.Center)
                                     .Children(
                                         new TextBlock()
-                                            .Grid(row: 0)
+                                            .HorizontalAlignment(HorizontalAlignment.Stretch)
                                             .FontSize(20)
                                             .Text("Enter your master password: "),
                                         new PasswordBox()
-                                            .Grid(row: 1, column: 0)
+                                            .HorizontalAlignment(HorizontalAlignment.Stretch)
                                             .MaxWidth(300)
                                             .PasswordRevealMode(PasswordRevealMode.Hidden)
                                             .PlaceholderText("Password...")
@@ -32,7 +30,7 @@ public sealed partial class MainPage : Page
                                                 x.Binding(() => vm.MasterPassword).TwoWay()
                                             ),
                                         new Button()
-                                            .Grid(row: 1, column: 1)
+                                            .HorizontalAlignment(HorizontalAlignment.Stretch)
                                             .Content(
                                                 () => vm.Loading,
                                                 loading =>
@@ -45,7 +43,7 @@ public sealed partial class MainPage : Page
                                             )
                                             .Command(() => vm.VerifyButtonCommand),
                                         new TextBlock()
-                                            .Grid(row: 2)
+                                            .HorizontalAlignment(HorizontalAlignment.Stretch)
                                             .Text(() => vm.VerificationResponse)
                                             .Foreground(
                                                 () => vm.VerificationResponse,
