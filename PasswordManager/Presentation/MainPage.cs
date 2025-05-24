@@ -8,28 +8,31 @@ public sealed partial class MainPage : Page
             (page, vm) =>
                 page.NavigationCacheMode(NavigationCacheMode.Required)
                     .Content(
-                        new StackPanel()
-                            .Spacing(16)
-                            .VerticalAlignment(VerticalAlignment.Center)
-                            .HorizontalAlignment(HorizontalAlignment.Center)
-                            .Children(
-                                new TextBlock().FontSize(20).Text("Enter your master password: "),
+                        new Border()
+                            .SafeArea(SafeArea.InsetMask.VisibleBounds)
+                            .Child(
                                 new Grid()
-                                    .SafeArea(SafeArea.InsetMask.All)
-                                    .ColumnDefinitions("2*, *")
+                                    .ColumnDefinitions("*, *")
+                                    .RowDefinitions("*, *, *")
+                                    .RowSpacing(6)
+                                    .ColumnSpacing(6)
+                                    .VerticalAlignment(VerticalAlignment.Center)
+                                    .HorizontalAlignment(HorizontalAlignment.Center)
                                     .Children(
+                                        new TextBlock()
+                                            .Grid(row: 0)
+                                            .FontSize(20)
+                                            .Text("Enter your master password: "),
                                         new PasswordBox()
-                                            .Margin(0, 0, 5, 0)
-                                            .Width(200)
+                                            .Grid(row: 1, column: 0)
+                                            .MaxWidth(300)
                                             .PasswordRevealMode(PasswordRevealMode.Hidden)
                                             .PlaceholderText("Password...")
                                             .Password(x =>
                                                 x.Binding(() => vm.MasterPassword).TwoWay()
                                             ),
                                         new Button()
-                                            .Grid(column: 1)
-                                            .Width(100)
-                                            .Height(60)
+                                            .Grid(row: 1, column: 1)
                                             .Content(
                                                 () => vm.Loading,
                                                 loading =>
@@ -40,13 +43,17 @@ public sealed partial class MainPage : Page
                                                             .Foreground(Colors.Black)
                                                         : "Verify"
                                             )
-                                            .Command(() => vm.VerifyButtonCommand)
-                                    ),
-                                new TextBlock()
-                                    .Text(() => vm.VerificationResponse)
-                                    .Foreground(
-                                        () => vm.VerificationResponse,
-                                        res => res == "Success" ? Colors.Green : Colors.Red
+                                            .Command(() => vm.VerifyButtonCommand),
+                                        new TextBlock()
+                                            .Grid(row: 2)
+                                            .Text(() => vm.VerificationResponse)
+                                            .Foreground(
+                                                () => vm.VerificationResponse,
+                                                res =>
+                                                    res == "Success - Redirecting..."
+                                                        ? Colors.Green
+                                                        : Colors.Red
+                                            )
                                     )
                             )
                     )
