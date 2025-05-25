@@ -7,9 +7,9 @@ public class EncryptionService : IEncryptionService
 {
     public MasterPassword CreateMasterPasswordHashAndSalts(string masterPassword)
     {
-        byte[] verSalt = GenerateSalt(32);
-        byte[] encSalt = GenerateSalt(32);
-        byte[] hash = GenerateHash(masterPassword, verSalt);
+        byte[] verSalt = EncryptionHelpers.GenerateSalt(32);
+        byte[] encSalt = EncryptionHelpers.GenerateSalt(32);
+        byte[] hash = EncryptionHelpers.GenerateHash(masterPassword, verSalt);
 
         return new MasterPassword()
         {
@@ -21,17 +21,17 @@ public class EncryptionService : IEncryptionService
 
     public void VerifyMasterPassword(string inputPassword, byte[] hash, byte[] salt)
     {
-        byte[] inputPasswordHash = GenerateHash(inputPassword, salt);
+        byte[] inputPasswordHash = EncryptionHelpers.GenerateHash(inputPassword, salt);
         if (!inputPasswordHash.SequenceEqual(hash))
             throw new Exception(message: "Incorrect password");
     }
 
     public byte[] DeriveEncKeyFromMasterPassword(string masterPassword, byte[] encSalt) =>
-        GenerateHash(masterPassword, encSalt);
+        EncryptionHelpers.GenerateHash(masterPassword, encSalt);
 
     public (byte[] encryptedPassword, byte[] iv) EncryptPassword(string password, byte[] key)
     {
-        byte[] iv = GenerateSalt(16);
+        byte[] iv = EncryptionHelpers.GenerateSalt(16);
         byte[] passwordInBytes = Encoding.UTF8.GetBytes(password);
 
         using Aes aes = Aes.Create();
@@ -80,19 +80,5 @@ public class EncryptionService : IEncryptionService
         }
 
         return new string(password);
-    }
-
-    private static byte[] GenerateSalt(int size)
-    {
-        byte[] salt = new byte[size];
-        using var rng = RandomNumberGenerator.Create();
-        rng.GetBytes(salt);
-        return salt;
-    }
-
-    private static byte[] GenerateHash(string toHash, byte[] salt)
-    {
-        using Rfc2898DeriveBytes hash = new(toHash, salt, 100000, HashAlgorithmName.SHA512);
-        return hash.GetBytes(32);
     }
 }
