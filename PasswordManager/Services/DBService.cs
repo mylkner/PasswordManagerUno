@@ -13,14 +13,8 @@ public class DBService : IDBService
         db.CreateTable<Password>();
         if (db.Find<MasterPassword>(1) == null)
         {
-            MasterPassword insertion = new()
-            {
-                Id = 1,
-                MasterPasswordHash = masterPassword.MasterPasswordHash,
-                VerSalt = masterPassword.VerSalt,
-                EncSalt = masterPassword.EncSalt,
-            };
-            db.Insert(insertion);
+            masterPassword.Id = 1;
+            db.Insert(masterPassword);
         }
     }
 
