@@ -42,8 +42,9 @@ public partial class App : Application
                     .ConfigureServices(
                         (context, services) =>
                         {
-                            services.AddSingleton<IEncryptionService, EncryptionService>();
                             services.AddSingleton<IDBService, DBService>();
+                            services.AddSingleton<IEncryptionService, EncryptionService>();
+                            services.AddSingleton<IEncryptionKeyService, EncryptionKeyService>();
                         }
                     )
                     .UseNavigation(ReactiveViewModelMappings.ViewModelMappings, RegisterRoutes)
