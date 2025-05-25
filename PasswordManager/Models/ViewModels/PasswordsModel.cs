@@ -7,5 +7,6 @@ public partial record PasswordsModel(
 )
 {
     private readonly byte[] _encKey = EncryptionKeyService.EncryptionKey;
-    public IListFeed<Password> Passwords => ListFeed.Async(DBService.GetPasswords);
+    public IListState<Password> Passwords =>
+        ListState<Password>.Value(this, DBService.GetPasswords);
 }
