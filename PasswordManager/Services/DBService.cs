@@ -30,7 +30,7 @@ public class DBService : IDBService
         return passwords.ToImmutableList();
     }
 
-    public async Task<Password> AddPassword(string title, byte[] iv, byte[] encryptedPassword)
+    public async Task<Password> AddPassword(string title, byte[] encryptedPassword, byte[] iv)
     {
         SQLiteAsyncConnection db = DbHelpers.GetDbConnection();
         Password newPassword = new()
