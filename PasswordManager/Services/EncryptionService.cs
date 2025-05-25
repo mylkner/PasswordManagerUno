@@ -35,8 +35,8 @@ public class EncryptionService : IEncryptionService
         byte[] passwordInBytes = Encoding.UTF8.GetBytes(password);
 
         using Aes aes = Aes.Create();
-        aes.Key = key;
         aes.IV = iv;
+        aes.Key = key;
 
         using MemoryStream ms = new();
         using ICryptoTransform encryptor = aes.CreateEncryptor();
@@ -48,18 +48,19 @@ public class EncryptionService : IEncryptionService
         return (ms.ToArray(), iv);
     }
 
-    public string DecryptPassword(byte[] iv, byte[] encryptedPassword, byte[] key)
+    public string DecryptPassword(byte[] encryptedPassword, byte[] iv, byte[] key)
     {
         using Aes aes = Aes.Create();
-        aes.Key = key;
         aes.IV = iv;
+        aes.Key = key;
 
         using MemoryStream ms = new(encryptedPassword);
         using ICryptoTransform decryptor = aes.CreateDecryptor();
         using CryptoStream cs = new(ms, decryptor, CryptoStreamMode.Read);
-        using StreamReader sr = new(cs);
+        using MemoryStream msPlain = new();
+        cs.CopyTo(msPlain);
 
-        return sr.ReadToEnd();
+        return Encoding.UTF8.GetString(msPlain.ToArray());
     }
 
     public string RandomPasswordGenerator()
