@@ -4,7 +4,7 @@ namespace PasswordManager.Services.Interfaces;
 
 public interface IDBService
 {
-    void CreateDB(MasterPassword masterPassword);
-    MasterPassword GetPasswordHashAndSalt();
-    IImmutableList<Password> GetPasswords();
+    ValueTask CreateDB(MasterPassword masterPassword, CancellationToken ct);
+    ValueTask<MasterPassword> GetPasswordHashAndSalt(CancellationToken ct);
+    ValueTask<IImmutableList<Password>> GetPasswords(CancellationToken ct);
 }

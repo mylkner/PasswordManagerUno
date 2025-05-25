@@ -8,5 +8,5 @@ public partial record PasswordsModel(
 {
     private readonly byte[] _encKey = EncryptionKeyService.EncryptionKey;
     public IListState<Password> Passwords =>
-        ListState<Password>.Value(this, DBService.GetPasswords);
+        ListState<Password>.Async(this, DBService.GetPasswords);
 }

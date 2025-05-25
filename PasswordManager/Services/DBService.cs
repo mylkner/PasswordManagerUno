@@ -4,29 +4,29 @@ namespace PasswordManager.Services;
 
 public class DBService : IDBService
 {
-    public void CreateDB(MasterPassword masterPassword)
+    public async ValueTask CreateDB(MasterPassword masterPassword, CancellationToken ct)
     {
-        using SQLiteConnection db = DbHelpers.GetDbConnection();
-        db.CreateTable<MasterPassword>();
-        db.CreateTable<Password>();
-        if (db.Find<MasterPassword>(1) == null)
+        SQLiteAsyncConnection db = DbHelpers.GetDbConnection();
+        await db.CreateTableAsync<MasterPassword>();
+        await db.CreateTableAsync<Password>();
+        if (await db.FindAsync<MasterPassword>(1) == null)
         {
             masterPassword.Id = 1;
-            db.Insert(masterPassword);
+            await db.InsertAsync(masterPassword);
         }
     }
 
-    public MasterPassword GetPasswordHashAndSalt()
+    public async ValueTask<MasterPassword> GetPasswordHashAndSalt(CancellationToken ct)
     {
-        using SQLiteConnection db = DbHelpers.GetDbConnection();
-        MasterPassword masterPasswordInfo = db.Find<MasterPassword>(1);
+        SQLiteAsyncConnection db = DbHelpers.GetDbConnection();
+        MasterPassword masterPasswordInfo = await db.FindAsync<MasterPassword>(1);
         return masterPasswordInfo;
     }
 
-    public IImmutableList<Password> GetPasswords()
+    public async ValueTask<IImmutableList<Password>> GetPasswords(CancellationToken ct)
     {
-        using SQLiteConnection db = DbHelpers.GetDbConnection();
-        ImmutableList<Password> passwords = db.Table<Password>().ToImmutableList();
-        return passwords;
+        SQLiteAsyncConnection db = DbHelpers.GetDbConnection();
+        List<Password> passwords = await db.Table<Password>().ToListAsync();
+        return passwords.ToImmutableList();
     }
 }

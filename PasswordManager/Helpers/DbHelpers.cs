@@ -4,14 +4,19 @@ namespace PasswordManager.Helpers;
 
 public static class DbHelpers
 {
-    private static string filepath = "../Passwords.db";
+    private static readonly StorageFolder _appDataFolder = ApplicationData.Current.LocalFolder;
+    private static readonly string _dataFolderPath = System.IO.Path.Combine(
+        _appDataFolder.Path,
+        "Passwords.db"
+    );
 
-    public static bool DoesDbExist() => File.Exists(filepath);
+    public static bool DoesDbExist() => File.Exists(_dataFolderPath);
 
-    public static SQLiteConnection GetDbConnection()
+    public static void CreateDirectory() => Directory.CreateDirectory(_appDataFolder.Path);
+
+    public static SQLiteAsyncConnection GetDbConnection()
     {
-        string dbPath = filepath;
-        SQLiteConnection db = new(dbPath);
-        return db;
+        string dbPath = _dataFolderPath;
+        return new(dbPath);
     }
 }

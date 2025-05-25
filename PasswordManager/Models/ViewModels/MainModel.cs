@@ -28,7 +28,7 @@ public partial record MainModel(
             if (string.IsNullOrWhiteSpace(masterPassword))
                 throw new Exception(message: "Password cannot be empty");
 
-            MasterPassword hashAndSalts = DBService.GetPasswordHashAndSalt();
+            MasterPassword hashAndSalts = await DBService.GetPasswordHashAndSalt(ct);
             EncryptionService.VerifyMasterPassword(
                 masterPassword,
                 hashAndSalts.MasterPasswordHash,
