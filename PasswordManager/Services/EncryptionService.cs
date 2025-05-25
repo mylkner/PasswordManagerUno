@@ -19,9 +19,11 @@ public class EncryptionService : IEncryptionService
         };
     }
 
-    public bool VerifyMasterPassword(string masterPassword, byte[] hash, byte[] salt)
+    public void VerifyMasterPassword(string inputPassword, byte[] hash, byte[] salt)
     {
-        return true;
+        byte[] inputPasswordHash = GenerateHash(inputPassword, salt);
+        if (!inputPasswordHash.SequenceEqual(hash))
+            throw new Exception(message: "Incorrect password");
     }
 
     public byte[] DeriveEncKeyFromMasterPassword(string masterPassword, byte[] encSalt)
