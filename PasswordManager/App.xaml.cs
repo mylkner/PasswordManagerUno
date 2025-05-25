@@ -81,7 +81,10 @@ public partial class App : Application
                         Init: (request) =>
                         {
                             if (!DbHelpers.DoesDbExist())
+                            {
+                                DbHelpers.CreateDirectory();
                                 request = request with { Route = Route.PageRoute("CreateMP") };
+                            }
                             return request;
                         }
                     ),
