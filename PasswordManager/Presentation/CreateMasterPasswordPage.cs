@@ -24,7 +24,6 @@ public sealed partial class CreateMasterPasswordPage : Page
                                         new PasswordBox()
                                             .HorizontalAlignment(HorizontalAlignment.Stretch)
                                             .MaxWidth(300)
-                                            .PasswordRevealMode(PasswordRevealMode.Hidden)
                                             .PlaceholderText("Password...")
                                             .Password(x =>
                                                 x.Binding(() => vm.MasterPassword).TwoWay()
