@@ -34,17 +34,11 @@ public partial record CreateMasterPasswordModel(
             if (mP != mPR)
                 throw new Exception(message: "Passwords do not match");
 
-            Dictionary<string, byte[]> hashAndSalts =
-                EncryptionService.CreateMasterPasswordHashAndSalts(mP);
-            await DBService.CreateDB(
-                hashAndSalts["hash"],
-                hashAndSalts["verSalt"],
-                hashAndSalts["encSalt"],
-                ct
-            );
+            MasterPassword hashAndSalts = EncryptionService.CreateMasterPasswordHashAndSalts(mP);
+            DBService.CreateDB(hashAndSalts);
             byte[] encKey = EncryptionService.DeriveEncKeyFromMasterPassword(
                 mP,
-                hashAndSalts["encSalt"]
+                hashAndSalts.EncSalt
             );
             EncryptionKeyService.EncryptionKey = encKey;
 
