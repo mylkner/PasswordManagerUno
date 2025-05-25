@@ -1,37 +1,47 @@
+using SQLite;
+
 namespace PasswordManager.Services;
 
 public class DBService : IDBService
 {
-    public static bool DoesDbExist()
-    {
-        return true;
-    }
+    public static bool DoesDbExist() => File.Exists("../Passwords.db");
 
-    public async ValueTask CreateDB(
-        byte[] masterPasswordHash,
-        byte[] verSalt,
-        byte[] encSalt,
-        CancellationToken ct
-    )
+    public void CreateDB(MasterPassword masterPassword)
     {
-        await Task.Delay(TimeSpan.FromSeconds(2), ct);
-    }
-
-    public async ValueTask<Dictionary<string, byte[]>> GetPasswordHashAndSalt(CancellationToken ct)
-    {
-        await Task.Delay(TimeSpan.FromSeconds(2), ct);
-        return new Dictionary<string, byte[]>
+        using SQLiteConnection db = GetDbConnection();
+        db.CreateTable<MasterPassword>();
+        db.CreateTable<Password>();
+        if (db.Find<MasterPassword>(1) == null)
         {
-            { "hash", [] },
-            { "verSalt", [] },
-            { "encSalt", [] },
-        };
+            MasterPassword insertion = new()
+            {
+                Id = 1,
+                MasterPasswordHash = masterPassword.MasterPasswordHash,
+                VerSalt = masterPassword.VerSalt,
+                EncSalt = masterPassword.EncSalt,
+            };
+            db.Insert(insertion);
+        }
     }
 
-    public async ValueTask<IImmutableList<Password>> GetPasswords(CancellationToken ct)
+    public MasterPassword GetPasswordHashAndSalt()
     {
-        await Task.Delay(TimeSpan.FromSeconds(2), ct);
-        Password[] passwords = [new Password("a"), new Password("b")];
-        return passwords.ToImmutableList();
+        using SQLiteConnection db = GetDbConnection();
+        MasterPassword masterPasswordInfo = db.Find<MasterPassword>(1);
+        return masterPasswordInfo;
+    }
+
+    public IImmutableList<Password> GetPasswords()
+    {
+        using SQLiteConnection db = GetDbConnection();
+        ImmutableList<Password> passwords = db.Table<Password>().ToImmutableList();
+        return passwords;
+    }
+
+    private static SQLiteConnection GetDbConnection()
+    {
+        string dbPath = "../Passwords.db";
+        SQLiteConnection db = new(dbPath);
+        return db;
     }
 }
