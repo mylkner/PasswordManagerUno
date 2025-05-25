@@ -79,7 +79,7 @@ public partial class App : Application
                         IsDefault: true,
                         Init: (request) =>
                         {
-                            if (DBService.DoesDbExist())
+                            if (!DBService.DoesDbExist())
                                 request = request with { Route = Route.PageRoute("CreateMP") };
                             return request;
                         }
