@@ -4,11 +4,13 @@ namespace PasswordManager.Helpers;
 
 public static class DbHelpers
 {
-    public static bool DoesDbExist() => File.Exists("../Passwords.db");
+    private static string filepath = "../Passwords.db";
+
+    public static bool DoesDbExist() => File.Exists(filepath);
 
     public static SQLiteConnection GetDbConnection()
     {
-        string dbPath = "../Passwords.db";
+        string dbPath = filepath;
         SQLiteConnection db = new(dbPath);
         return db;
     }
