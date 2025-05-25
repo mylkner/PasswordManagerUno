@@ -2,7 +2,7 @@ namespace PasswordManager.Services.Interfaces;
 
 public interface IEncryptionService
 {
-    Dictionary<string, byte[]> CreateMasterPasswordHashAndSalts(string masterPassword);
+    MasterPassword CreateMasterPasswordHashAndSalts(string masterPassword);
     void VerifyMasterPassword(string masterPassword, byte[] hash, byte[] salt);
     byte[] DeriveEncKeyFromMasterPassword(string inputPassword, byte[] salt);
     (byte[] encryptedPassword, byte[] iv) EncryptPassword(string password, byte[] key);
