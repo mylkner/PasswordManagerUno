@@ -5,17 +5,17 @@ namespace PasswordManager.Services;
 
 public class EncryptionService : IEncryptionService
 {
-    public Dictionary<string, byte[]> CreateMasterPasswordHashAndSalts(string masterPassword)
+    public MasterPassword CreateMasterPasswordHashAndSalts(string masterPassword)
     {
         byte[] verSalt = GenerateSalt(32);
         byte[] encSalt = GenerateSalt(32);
         byte[] hash = GenerateHash(masterPassword, verSalt);
 
-        return new Dictionary<string, byte[]>
+        return new MasterPassword()
         {
-            { "hash", hash },
-            { "verSalt", verSalt },
-            { "encSalt", encSalt },
+            MasterPasswordHash = hash,
+            VerSalt = verSalt,
+            EncSalt = encSalt,
         };
     }
 
