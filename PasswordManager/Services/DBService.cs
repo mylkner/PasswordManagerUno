@@ -4,7 +4,7 @@ namespace PasswordManager.Services;
 
 public class DBService : IDBService
 {
-    public async ValueTask CreateDB(MasterPassword masterPassword, CancellationToken ct)
+    public async Task CreateDB(MasterPassword masterPassword, CancellationToken ct)
     {
         SQLiteAsyncConnection db = DbHelpers.GetDbConnection();
         await db.CreateTableAsync<MasterPassword>();
@@ -16,7 +16,7 @@ public class DBService : IDBService
         }
     }
 
-    public async ValueTask<MasterPassword> GetPasswordHashAndSalt(CancellationToken ct)
+    public async Task<MasterPassword> GetPasswordHashAndSalt(CancellationToken ct)
     {
         SQLiteAsyncConnection db = DbHelpers.GetDbConnection();
         MasterPassword masterPasswordInfo = await db.FindAsync<MasterPassword>(1);
@@ -28,5 +28,23 @@ public class DBService : IDBService
         SQLiteAsyncConnection db = DbHelpers.GetDbConnection();
         List<Password> passwords = await db.Table<Password>().ToListAsync();
         return passwords.ToImmutableList();
+    }
+
+    public async Task AddPassword(string title, byte[] iv, byte[] encryptedPassword)
+    {
+        SQLiteAsyncConnection db = DbHelpers.GetDbConnection();
+        Password newPassword = new()
+        {
+            Title = title,
+            Iv = iv,
+            EncryptedPassword = encryptedPassword,
+        };
+        await db.InsertAsync(newPassword);
+    }
+
+    public async Task DeletePassword(int id)
+    {
+        SQLiteAsyncConnection db = DbHelpers.GetDbConnection();
+        await db.DeleteAsync<Password>(id);
     }
 }
