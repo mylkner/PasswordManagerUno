@@ -2,9 +2,19 @@ using SQLite;
 
 namespace PasswordManager.Models.DataModels;
 
+[Table("MasterPassword")]
 public class MasterPassword
 {
-    public required byte[] MasterPasswordHash { get; set; }
-    public required byte[] VerSalt { get; set; }
-    public required byte[] EncSalt { get; set; }
+    [Column("id")]
+    [PrimaryKey]
+    public int Id { get; set; }
+
+    [Column("master_password_hash")]
+    public byte[] MasterPasswordHash { get; set; }
+
+    [Column("ver_salt")]
+    public byte[] VerSalt { get; set; }
+
+    [Column("enc_salt")]
+    public byte[] EncSalt { get; set; }
 }
