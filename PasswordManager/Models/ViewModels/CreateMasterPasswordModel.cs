@@ -3,6 +3,7 @@ namespace PasswordManager.Models.ViewModels;
 public partial record CreateMasterPasswordModel(
     IDBService DBService,
     IEncryptionService EncryptionService,
+    IEncryptionKeyService EncryptionKeyService,
     INavigator Navigator
 )
 {
@@ -27,17 +28,11 @@ public partial record CreateMasterPasswordModel(
             string? mP = await MasterPassword;
             string? mPR = await MasterPasswordReEntered;
 
-            if (mP is null || mPR is null)
-            {
-                await SetResponse("Neither value can be null");
-                return;
-            }
+            if (string.IsNullOrWhiteSpace(mP) || string.IsNullOrWhiteSpace(mPR))
+                throw new Exception(message: "Values cannot be empty");
 
             if (mP != mPR)
-            {
-                await SetResponse("Passwords do not match");
-                return;
-            }
+                throw new Exception(message: "Passwords do not match");
 
             Dictionary<string, byte[]> hashAndSalts =
                 EncryptionService.CreateMasterPasswordHashAndSalts(mP);
@@ -51,6 +46,7 @@ public partial record CreateMasterPasswordModel(
                 mP,
                 hashAndSalts["encSalt"]
             );
+            EncryptionKeyService.EncryptionKey = encKey;
 
             await SetResponse("Created - Redirecting...");
             await Task.Delay(TimeSpan.FromSeconds(2), ct);

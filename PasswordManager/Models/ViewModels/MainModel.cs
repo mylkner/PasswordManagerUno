@@ -3,6 +3,7 @@ namespace PasswordManager.Models.ViewModels;
 public partial record MainModel(
     IDBService DBService,
     IEncryptionService EncryptionService,
+    IEncryptionKeyService EncryptionKeyService,
     INavigator Navigator
 )
 {
@@ -24,33 +25,28 @@ public partial record MainModel(
         try
         {
             string? masterPassword = await MasterPassword;
-            if (masterPassword is null)
-            {
-                await SetResponse("Password cannot be null");
-                return;
-            }
+            if (string.IsNullOrWhiteSpace(masterPassword))
+                throw new Exception(message: "Password cannot be empty");
 
             Dictionary<string, byte[]> hashAndSalts = await DBService.GetPasswordHashAndSalt(ct);
-
-            if (
-                !EncryptionService.VerifyMasterPassword(
-                    masterPassword,
-                    hashAndSalts["hash"],
-                    hashAndSalts["verSalt"]
-                )
-            )
-            {
-                await SetResponse("Incorrect password");
-                return;
-            }
-
+            EncryptionService.VerifyMasterPassword(
+                masterPassword,
+                hashAndSalts["hash"],
+                hashAndSalts["verSalt"]
+            );
             byte[] encKey = EncryptionService.DeriveEncKeyFromMasterPassword(
                 masterPassword,
                 hashAndSalts["encSalt"]
             );
+            EncryptionKeyService.EncryptionKey = encKey;
+
             await SetResponse("Success - Redirecting...");
             await Task.Delay(TimeSpan.FromSeconds(2), ct);
             await _navigator.NavigateRouteAsync(this, "Passwords", cancellation: ct);
+        }
+        catch (Exception ex)
+        {
+            await SetResponse($"Error: {ex.Message}");
         }
         finally
         {
