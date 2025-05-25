@@ -7,16 +7,26 @@ public class DBService : IDBService
         return true;
     }
 
-    public async ValueTask<bool> CreateDB(CancellationToken ct)
+    public async ValueTask<bool> CreateDB(
+        byte[] masterPasswordHash,
+        byte[] verSalt,
+        byte[] encSalt,
+        CancellationToken ct
+    )
     {
         await Task.Delay(TimeSpan.FromSeconds(2), ct);
         return true;
     }
 
-    public async ValueTask<bool> VerifyMasterPassword(string masterPassword, CancellationToken ct)
+    public async ValueTask<Dictionary<string, byte[]>> GetPasswordHashAndSalt(CancellationToken ct)
     {
         await Task.Delay(TimeSpan.FromSeconds(2), ct);
-        return true;
+        return new Dictionary<string, byte[]>
+        {
+            { "hash", [] },
+            { "verSalt", [] },
+            { "encSalt", [] },
+        };
     }
 
     public async ValueTask<IImmutableList<Password>> GetPasswords(CancellationToken ct)

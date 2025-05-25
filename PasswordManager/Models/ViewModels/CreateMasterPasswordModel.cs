@@ -39,7 +39,19 @@ public partial record CreateMasterPasswordModel(
                 return;
             }
 
-            await DBService.CreateDB(ct);
+            Dictionary<string, byte[]> hashAndSalts =
+                EncryptionService.CreateMasterPasswordHashAndSalts(mP);
+            await DBService.CreateDB(
+                hashAndSalts["hash"],
+                hashAndSalts["verSalt"],
+                hashAndSalts["encSalt"],
+                ct
+            );
+            byte[] encKey = EncryptionService.DeriveEncKeyFromMasterPassword(
+                mP,
+                hashAndSalts["encSalt"]
+            );
+
             await SetResponse("Created - Redirecting...");
             await Task.Delay(TimeSpan.FromSeconds(2), ct);
             await _navigator.NavigateRouteAsync(this, "Passwords", cancellation: ct);

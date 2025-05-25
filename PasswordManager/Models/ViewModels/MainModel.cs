@@ -30,12 +30,24 @@ public partial record MainModel(
                 return;
             }
 
-            if (!await DBService.VerifyMasterPassword(masterPassword, ct))
+            Dictionary<string, byte[]> hashAndSalts = await DBService.GetPasswordHashAndSalt(ct);
+
+            if (
+                !EncryptionService.VerifyMasterPassword(
+                    masterPassword,
+                    hashAndSalts["hash"],
+                    hashAndSalts["verSalt"]
+                )
+            )
             {
-                await SetResponse("Error");
+                await SetResponse("Incorrect password");
                 return;
             }
 
+            byte[] encKey = EncryptionService.DeriveEncKeyFromMasterPassword(
+                masterPassword,
+                hashAndSalts["encSalt"]
+            );
             await SetResponse("Success - Redirecting...");
             await Task.Delay(TimeSpan.FromSeconds(2), ct);
             await _navigator.NavigateRouteAsync(this, "Passwords", cancellation: ct);

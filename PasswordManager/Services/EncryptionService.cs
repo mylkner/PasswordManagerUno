@@ -5,14 +5,28 @@ namespace PasswordManager.Services;
 
 public class EncryptionService : IEncryptionService
 {
-    public void DeriveKeysFromMasterPassword(string masterPassword, byte[] salt)
+    public Dictionary<string, byte[]> CreateMasterPasswordHashAndSalts(string masterPassword)
     {
-        using Rfc2898DeriveBytes pbkdf2 = new(
-            masterPassword,
-            salt,
-            100000,
-            HashAlgorithmName.SHA512
-        );
+        byte[] verSalt = GenerateSalt(32);
+        byte[] encSalt = GenerateSalt(32);
+        byte[] hash = GenerateHash(masterPassword, verSalt);
+
+        return new Dictionary<string, byte[]>
+        {
+            { "hash", hash },
+            { "verSalt", verSalt },
+            { "encSalt", encSalt },
+        };
+    }
+
+    public bool VerifyMasterPassword(string masterPassword, byte[] hash, byte[] salt)
+    {
+        return true;
+    }
+
+    public byte[] DeriveEncKeyFromMasterPassword(string masterPassword, byte[] encSalt)
+    {
+        return GenerateHash(masterPassword, encSalt);
     }
 
     public (byte[] encryptedPassword, byte[] iv) EncryptPassword(string password, byte[] key)
@@ -68,11 +82,17 @@ public class EncryptionService : IEncryptionService
         return new string(password);
     }
 
-    public byte[] GenerateSalt(int size)
+    private static byte[] GenerateSalt(int size)
     {
         byte[] salt = new byte[size];
         using var rng = RandomNumberGenerator.Create();
         rng.GetBytes(salt);
         return salt;
+    }
+
+    private static byte[] GenerateHash(string toHash, byte[] salt)
+    {
+        using Rfc2898DeriveBytes hash = new(toHash, salt, 100000, HashAlgorithmName.SHA512);
+        return hash.GetBytes(32);
     }
 }
