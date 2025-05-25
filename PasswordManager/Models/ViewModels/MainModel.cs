@@ -28,15 +28,15 @@ public partial record MainModel(
             if (string.IsNullOrWhiteSpace(masterPassword))
                 throw new Exception(message: "Password cannot be empty");
 
-            Dictionary<string, byte[]> hashAndSalts = await DBService.GetPasswordHashAndSalt(ct);
+            MasterPassword hashAndSalts = DBService.GetPasswordHashAndSalt();
             EncryptionService.VerifyMasterPassword(
                 masterPassword,
-                hashAndSalts["hash"],
-                hashAndSalts["verSalt"]
+                hashAndSalts.MasterPasswordHash,
+                hashAndSalts.VerSalt
             );
             byte[] encKey = EncryptionService.DeriveEncKeyFromMasterPassword(
                 masterPassword,
-                hashAndSalts["encSalt"]
+                hashAndSalts.EncSalt
             );
             EncryptionKeyService.EncryptionKey = encKey;
 
