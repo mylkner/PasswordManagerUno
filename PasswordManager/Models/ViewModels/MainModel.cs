@@ -50,6 +50,7 @@ public partial record MainModel(
         }
         finally
         {
+            await MasterPassword.UpdateAsync(_ => "", ct);
             await SetLoading(false);
         }
     }

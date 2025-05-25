@@ -52,6 +52,8 @@ public partial record CreateMasterPasswordModel(
         }
         finally
         {
+            await MasterPassword.UpdateAsync(_ => "", ct);
+            await MasterPasswordReEntered.UpdateAsync(_ => "", ct);
             await SetLoading(false);
         }
     }
