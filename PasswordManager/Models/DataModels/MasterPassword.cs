@@ -10,11 +10,11 @@ public class MasterPassword
     public int Id { get; set; }
 
     [Column("master_password_hash")]
-    public byte[] MasterPasswordHash { get; set; }
+    public byte[] MasterPasswordHash { get; set; } = [];
 
     [Column("ver_salt")]
-    public byte[] VerSalt { get; set; }
+    public byte[] VerSalt { get; set; } = [];
 
     [Column("enc_salt")]
-    public byte[] EncSalt { get; set; }
+    public byte[] EncSalt { get; set; } = [];
 }

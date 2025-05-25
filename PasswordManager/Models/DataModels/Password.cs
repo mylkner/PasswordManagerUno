@@ -10,11 +10,11 @@ public class Password
     public int Id { get; set; }
 
     [Column("title")]
-    public string Title { get; set; }
+    public string Title { get; set; } = "";
 
     [Column("iv")]
-    public byte[] Iv { get; set; }
+    public byte[] Iv { get; set; } = [];
 
     [Column("encrypted_password")]
-    public byte[] EncryptedPassword { get; set; }
+    public byte[] EncryptedPassword { get; set; } = [];
 }
