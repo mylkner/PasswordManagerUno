@@ -26,10 +26,8 @@ public class EncryptionService : IEncryptionService
             throw new Exception(message: "Incorrect password");
     }
 
-    public byte[] DeriveEncKeyFromMasterPassword(string masterPassword, byte[] encSalt)
-    {
-        return GenerateHash(masterPassword, encSalt);
-    }
+    public byte[] DeriveEncKeyFromMasterPassword(string masterPassword, byte[] encSalt) =>
+        GenerateHash(masterPassword, encSalt);
 
     public (byte[] encryptedPassword, byte[] iv) EncryptPassword(string password, byte[] key)
     {
