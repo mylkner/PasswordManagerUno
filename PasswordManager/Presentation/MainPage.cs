@@ -48,9 +48,9 @@ public sealed partial class MainPage : Page
                                             .Foreground(
                                                 () => vm.VerificationResponse,
                                                 res =>
-                                                    res == "Success - Redirecting..."
-                                                        ? Colors.Green
-                                                        : Colors.Red
+                                                    res == "Created - Redirecting..."
+                                                        ? new SolidColorBrush(Colors.Green)
+                                                        : new SolidColorBrush(Colors.Red)
                                             )
                                     )
                             )

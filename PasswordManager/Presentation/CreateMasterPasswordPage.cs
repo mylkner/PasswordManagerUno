@@ -57,8 +57,8 @@ public sealed partial class CreateMasterPasswordPage : Page
                                                 () => vm.CreationResponse,
                                                 res =>
                                                     res == "Created - Redirecting..."
-                                                        ? Colors.Green
-                                                        : Colors.Red
+                                                        ? new SolidColorBrush(Colors.Green)
+                                                        : new SolidColorBrush(Colors.Red)
                                             )
                                     )
                             )
