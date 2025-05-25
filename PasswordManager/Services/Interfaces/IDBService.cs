@@ -2,7 +2,7 @@ namespace PasswordManager.Services.Interfaces;
 
 public interface IDBService
 {
-    ValueTask<bool> CreateDB(
+    ValueTask CreateDB(
         byte[] masterPasswordHash,
         byte[] verSalt,
         byte[] encSalt,
