@@ -8,6 +8,5 @@ global using PasswordManager.Presentation;
 global using PasswordManager.Services;
 global using PasswordManager.Services.Interfaces;
 global using ApplicationExecutionState = Windows.ApplicationModel.Activation.ApplicationExecutionState;
-global using Color = Windows.UI.Color;
 
 [assembly: Uno.Extensions.Reactive.Config.BindableGenerationTool(3)]
