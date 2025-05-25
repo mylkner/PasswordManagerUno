@@ -7,7 +7,7 @@ public class DBService : IDBService
         return true;
     }
 
-    public async ValueTask<bool> CreateDB(
+    public async ValueTask CreateDB(
         byte[] masterPasswordHash,
         byte[] verSalt,
         byte[] encSalt,
@@ -15,7 +15,6 @@ public class DBService : IDBService
     )
     {
         await Task.Delay(TimeSpan.FromSeconds(2), ct);
-        return true;
     }
 
     public async ValueTask<Dictionary<string, byte[]>> GetPasswordHashAndSalt(CancellationToken ct)
