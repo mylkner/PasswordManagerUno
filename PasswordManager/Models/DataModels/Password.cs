@@ -2,7 +2,7 @@ using SQLite;
 
 namespace PasswordManager.Models.DataModels;
 
-[Table("Password")]
+[Table("passwords")]
 public class Password
 {
     [PrimaryKey, AutoIncrement]
@@ -17,4 +17,16 @@ public class Password
 
     [Column("encrypted_password")]
     public byte[] EncryptedPassword { get; set; } = [];
+}
+
+public class PasswordPreview(int id, string title)
+{
+    public int Id { get; set; } = id;
+    public string Title { get; set; } = title;
+}
+
+public class PasswordEncrypted(byte[] iv, byte[] encryptedPassword)
+{
+    public byte[] Iv { get; set; } = iv;
+    public byte[] EncryptedPassword { get; set; } = encryptedPassword;
 }
