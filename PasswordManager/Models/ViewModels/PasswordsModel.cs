@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+
 namespace PasswordManager.Models.ViewModels;
 
 public partial record PasswordsModel(
@@ -7,16 +9,19 @@ public partial record PasswordsModel(
 )
 {
     private readonly byte[] _encKey = EncryptionKeyService.EncryptionKey;
-    public IListState<Password> Passwords =>
-        ListState<Password>.Async(this, DBService.GetPasswords);
+    public IState<string> PasswordToAdd => State<string>.Empty(this);
+    public IState<string> SearchTerm => State<string>.Value(this, () => "");
+    public IListFeed<PasswordPreview> Passwords =>
+        SearchTerm.SelectAsync(DBService.GetPasswords).AsListFeed();
 
-    public void DecryptPassword(Password password)
+    public async Task DecryptPassword(int id, CancellationToken ct)
     {
         try
         {
+            PasswordEncrypted pwdEnc = await DBService.GetEncryptedPassword(id, ct);
             string decryptedPassword = EncryptionService.DecryptPassword(
-                password.EncryptedPassword,
-                password.Iv,
+                pwdEnc.EncryptedPassword,
+                pwdEnc.Iv,
                 _encKey
             );
             Console.WriteLine(decryptedPassword);
@@ -31,12 +36,12 @@ public partial record PasswordsModel(
     {
         try
         {
+            string? passwordToAdd = await PasswordToAdd;
             (byte[] encryptedPassword, byte[] iv) = EncryptionService.EncryptPassword(
-                "awd",
+                passwordToAdd!,
                 _encKey
             );
-            Password newPassword = await DBService.AddPassword("Tile", encryptedPassword, iv);
-            await Passwords.AddAsync(newPassword, ct);
+            Password newPassword = await DBService.AddPassword("Tile", encryptedPassword, iv, ct);
         }
         catch (Exception ex)
         {
@@ -48,8 +53,7 @@ public partial record PasswordsModel(
     {
         try
         {
-            await DBService.DeletePassword(id);
-            await Passwords.RemoveAllAsync(match: pwd => pwd.Id == id, ct);
+            await DBService.DeletePassword(id, ct);
         }
         catch (Exception ex)
         {
