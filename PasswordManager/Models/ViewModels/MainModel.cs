@@ -14,8 +14,7 @@ public partial record MainModel(
 
     public async ValueTask VerifyButtonCommand(CancellationToken ct)
     {
-        async ValueTask SetLoading(bool isLoading) =>
-            await Loading.UpdateDataAsync(_ => isLoading, ct);
+        async ValueTask SetLoading(bool isLoading) => await Loading.UpdateAsync(_ => isLoading, ct);
         async ValueTask SetResponse(string? message) =>
             await VerificationResponse.UpdateAsync(_ => message, ct);
 
