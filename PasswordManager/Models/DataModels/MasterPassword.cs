@@ -2,7 +2,7 @@ using SQLite;
 
 namespace PasswordManager.Models.DataModels;
 
-[Table("MasterPassword")]
+[Table("master_password")]
 public class MasterPassword
 {
     [Column("id")]
