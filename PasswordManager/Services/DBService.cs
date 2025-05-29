@@ -23,14 +23,37 @@ public class DBService : IDBService
         return masterPasswordInfo;
     }
 
-    public async ValueTask<IImmutableList<Password>> GetPasswords(CancellationToken ct)
+    public async ValueTask<IImmutableList<PasswordPreview>> GetPasswords(
+        string SearchTerm,
+        CancellationToken ct
+    )
     {
         SQLiteAsyncConnection db = DbHelpers.GetDbConnection();
-        List<Password> passwords = await db.Table<Password>().ToListAsync();
-        return passwords.ToImmutableList();
+        List<Password> passwords = string.IsNullOrWhiteSpace(SearchTerm)
+            ? await db.QueryAsync<Password>("SELECT id, title FROM passwords")
+            : await db.QueryAsync<Password>(
+                "SELECT id, title FROM passwords WHERE title LIKE LOWER(?)",
+                $"%{SearchTerm.ToLower()}%"
+            );
+        return passwords.Select(pwd => new PasswordPreview(pwd.Id, pwd.Title)).ToImmutableList();
     }
 
-    public async Task<Password> AddPassword(string title, byte[] encryptedPassword, byte[] iv)
+    public async Task<PasswordEncrypted> GetEncryptedPassword(int id, CancellationToken ct)
+    {
+        SQLiteAsyncConnection db = DbHelpers.GetDbConnection();
+        List<Password> pwdEnc = await db.QueryAsync<Password>(
+            "SELECT iv, encrypted_password FROM passwords WHERE id = ?",
+            id
+        );
+        return pwdEnc.Select(pwd => new PasswordEncrypted(pwd.Iv, pwd.EncryptedPassword)).First();
+    }
+
+    public async Task<Password> AddPassword(
+        string title,
+        byte[] encryptedPassword,
+        byte[] iv,
+        CancellationToken ct
+    )
     {
         SQLiteAsyncConnection db = DbHelpers.GetDbConnection();
         Password newPassword = new()
@@ -43,7 +66,7 @@ public class DBService : IDBService
         return newPassword;
     }
 
-    public async Task DeletePassword(int id)
+    public async Task DeletePassword(int id, CancellationToken ct)
     {
         SQLiteAsyncConnection db = DbHelpers.GetDbConnection();
         await db.DeleteAsync<Password>(id);
