@@ -23,7 +23,7 @@ public class DBService : IDBService
         return masterPasswordInfo;
     }
 
-    public async ValueTask<IImmutableList<PasswordPreview>> GetPasswords(
+    public async ValueTask<ImmutableList<PasswordPreview>> GetPasswords(
         string SearchTerm,
         CancellationToken ct
     )
@@ -35,7 +35,10 @@ public class DBService : IDBService
                 "SELECT id, title FROM passwords WHERE title LIKE LOWER(?)",
                 $"%{SearchTerm.ToLower()}%"
             );
-        return passwords.Select(pwd => new PasswordPreview(pwd.Id, pwd.Title)).ToImmutableList();
+        return passwords
+            .Select(pwd => new PasswordPreview(pwd.Id, pwd.Title))
+            .OrderBy(pwd => pwd.Title)
+            .ToImmutableList();
     }
 
     public async Task<PasswordEncrypted> GetEncryptedPassword(int id, CancellationToken ct)
@@ -48,7 +51,7 @@ public class DBService : IDBService
         return pwdEnc.Select(pwd => new PasswordEncrypted(pwd.Iv, pwd.EncryptedPassword)).First();
     }
 
-    public async Task<Password> AddPassword(
+    public async Task<PasswordPreview> AddPassword(
         string title,
         byte[] encryptedPassword,
         byte[] iv,
@@ -56,6 +59,13 @@ public class DBService : IDBService
     )
     {
         SQLiteAsyncConnection db = DbHelpers.GetDbConnection();
+        int checkForDuplicates = await db.ExecuteScalarAsync<int>(
+            "SELECT COUNT(*) FROM passwords WHERE title = ?",
+            title
+        );
+        if (checkForDuplicates > 0)
+            throw new Exception(message: $"Password with title '{title}' already exists");
+
         Password newPassword = new()
         {
             Title = title,
@@ -63,7 +73,7 @@ public class DBService : IDBService
             EncryptedPassword = encryptedPassword,
         };
         await db.InsertAsync(newPassword);
-        return newPassword;
+        return new PasswordPreview(newPassword.Id, newPassword.Title);
     }
 
     public async Task DeletePassword(int id, CancellationToken ct)

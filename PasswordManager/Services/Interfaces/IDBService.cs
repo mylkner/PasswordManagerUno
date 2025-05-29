@@ -4,12 +4,9 @@ public interface IDBService
 {
     Task CreateDB(MasterPassword masterPassword, CancellationToken ct);
     Task<MasterPassword> GetPasswordHashAndSalt(CancellationToken ct);
-    ValueTask<IImmutableList<PasswordPreview>> GetPasswords(
-        string SearchTerm,
-        CancellationToken ct
-    );
+    ValueTask<ImmutableList<PasswordPreview>> GetPasswords(string SearchTerm, CancellationToken ct);
     Task<PasswordEncrypted> GetEncryptedPassword(int id, CancellationToken ct);
-    Task<Password> AddPassword(
+    Task<PasswordPreview> AddPassword(
         string title,
         byte[] encryptedPassword,
         byte[] iv,
