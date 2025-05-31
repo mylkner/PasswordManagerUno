@@ -75,15 +75,11 @@ public partial record MainModel(
             await MasterPassword.UpdateAsync(_ => "", ct);
             await Task.Delay(TimeSpan.FromSeconds(1), ct);
 
-            //#if __ANDROID__ || __IOS__
-            //private void GotoNextPage(object sender, RoutedEventArgs e) => Frame.Navigate(typeof(PasswordsPage));
-            //#else
             await _navigator.NavigateViewModelAsync<PasswordsViewModel>(
                 this,
                 qualifier: Qualifiers.ClearBackStack,
                 cancellation: ct
             );
-            //#endif
         }
         catch (Exception ex)
         {
