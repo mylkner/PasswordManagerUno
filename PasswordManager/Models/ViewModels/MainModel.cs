@@ -18,7 +18,7 @@ public partial record MainModel(
     {
         _timer = 30;
         await VerificationResponse.UpdateAsync(
-            _ => $"Too many attempts. Please wait {_timer} seconds before trying again",
+            _ => $"Too many wrong attempts. Please wait {_timer} seconds before trying again",
             ct
         );
         while (_timer > 0)
@@ -26,7 +26,7 @@ public partial record MainModel(
             await Task.Delay(1000, ct);
             _timer -= 1;
             await VerificationResponse.UpdateAsync(
-                _ => $"Too many attempts. Please wait {_timer} seconds before trying again",
+                _ => $"Too many wrong attempts. Please wait {_timer} seconds before trying again",
                 ct
             );
         }
