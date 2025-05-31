@@ -31,9 +31,7 @@ public static class DbHelpers
         StorageFile pickedFile = await fop.PickSingleFileAsync();
         if (pickedFile != null)
         {
-            await dbFile.DeleteAsync();
-            await pickedFile.MoveAsync(_appDataFolder);
-            await pickedFile.RenameAsync("Passwords.db");
+            await pickedFile.CopyAndReplaceAsync(dbFile);
         }
         else
         {
@@ -43,6 +41,7 @@ public static class DbHelpers
 
     public static async Task ExportDb()
     {
+        await GetDbConnection().CloseAsync();
         StorageFile dbFile = await _appDataFolder.GetFileAsync("Passwords.db");
         FileSavePicker fsp = new()
         {
