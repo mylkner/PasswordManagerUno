@@ -14,22 +14,13 @@ public partial record MainModel(
     public IState<string> VerificationResponse => State<string>.Empty(this);
     public IState<bool> Loading => State<bool>.Value(this, () => false);
 
-    private void IncrementAttempt()
-    {
-        if (_attempts < 3)
-            _attempts++;
-        else
-        {
-            _attempts = 0;
-            _timer = 30;
-            throw new Exception(
-                message: $"Too many attempts. Please wait {_timer} seconds before trying again"
-            );
-        }
-    }
-
     private async Task Timer(CancellationToken ct)
     {
+        _timer = 30;
+        await VerificationResponse.UpdateAsync(
+            _ => $"Too many attempts. Please wait {_timer} seconds before trying again",
+            ct
+        );
         while (_timer > 0)
         {
             await Task.Delay(1000, ct);
@@ -57,8 +48,6 @@ public partial record MainModel(
             if (string.IsNullOrWhiteSpace(masterPassword))
                 throw new Exception(message: "Password cannot be empty");
 
-            IncrementAttempt();
-
             MasterPassword hashAndSalts = await DBService.GetPasswordHashAndSalt(ct);
             EncryptionService.VerifyMasterPassword(
                 masterPassword,
@@ -83,11 +72,18 @@ public partial record MainModel(
         }
         catch (Exception ex)
         {
-            await SetResponse($"Error: {ex.Message}");
-            await MasterPassword.UpdateAsync(_ => "", ct);
             await SetLoading(false);
-            if (ex.Message.Contains("Too many attempts"))
+            await MasterPassword.UpdateAsync(_ => "", ct);
+            _attempts++;
+            if (_attempts == 3)
+            {
                 await Timer(ct);
+                _attempts = 0;
+            }
+            else
+            {
+                await SetResponse($"Error: {ex.Message}");
+            }
         }
     }
 }
