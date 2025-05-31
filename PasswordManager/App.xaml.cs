@@ -13,7 +13,7 @@ public partial class App : Application
         this.InitializeComponent();
     }
 
-    protected Window? MainWindow { get; private set; }
+    internal static Window? MainWindow { get; private set; }
     protected IHost? Host { get; private set; }
 
     protected override async void OnLaunched(LaunchActivatedEventArgs args)
@@ -56,7 +56,7 @@ public partial class App : Application
 #endif
         MainWindow.SetWindowIcon();
 
-#if __ANDROID__ || __IOS__
+#if __ANDROID__
         Uno.UI.FeatureConfiguration.NativeFramePresenter.AndroidUnloadInactivePages = true;
 #endif
 
