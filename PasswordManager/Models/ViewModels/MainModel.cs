@@ -41,7 +41,7 @@ public partial record MainModel(
 
             await SetResponse("Success - Redirecting...");
             await Task.Delay(TimeSpan.FromSeconds(2), ct);
-            await _navigator.NavigateRouteAsync(this, "Passwords", cancellation: ct);
+            await _navigator.NavigateViewModelAsync<PasswordsViewModel>(this, cancellation: ct);
         }
         catch (Exception ex)
         {
