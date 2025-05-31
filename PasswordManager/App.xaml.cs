@@ -39,7 +39,7 @@ public partial class App : Application
                 // Switch to Development environment when running in DEBUG
                 .UseEnvironment(Environments.Development)
 #endif
-                    .ConfigureServices(
+                .ConfigureServices(
                         (context, services) =>
                         {
                             services.AddSingleton<IDBService, DBService>();
@@ -55,6 +55,10 @@ public partial class App : Application
         MainWindow.UseStudio();
 #endif
         MainWindow.SetWindowIcon();
+
+#if __ANDROID__ || __IOS__
+        Uno.UI.FeatureConfiguration.NativeFramePresenter.AndroidUnloadInactivePages = true;
+#endif
 
         Host = await builder.NavigateAsync<Shell>();
     }
