@@ -7,36 +7,30 @@ public sealed partial class PasswordsPage : Page
         this.DataContext<PasswordsViewModel>(
             (page, vm) =>
                 page.NavigationCacheMode(NavigationCacheMode.Required)
+                    .Background(Theme.Brushes.Background.Default)
                     .Content(
                         new ResponsiveView()
                             .NarrowTemplate(
                                 () =>
-                                    new Border()
-                                        .SafeArea(SafeArea.InsetMask.VisibleBounds)
-                                        .Child(
-                                            new Grid()
-                                                .RowDefinitions("*, *")
-                                                .Children(
-                                                    new ScrollViewer().Content(
-                                                        TabBar(vm, this).Grid(row: 0)
-                                                    ),
-                                                    PasswordsView(Feedback(vm), Feed(vm, this))
-                                                        .Grid(row: 1)
-                                                )
+                                    new Grid()
+                                        .SafeArea(SafeArea.InsetMask.All)
+                                        .RowDefinitions("*, *")
+                                        .Children(
+                                            new ScrollViewer().Content(
+                                                TabBar(vm, this).Grid(row: 0)
+                                            ),
+                                            PasswordsView(Feedback(vm), Feed(vm, this)).Grid(row: 1)
                                         )
                             )
                             .WidestTemplate(
                                 () =>
-                                    new Border()
-                                        .SafeArea(SafeArea.InsetMask.VisibleBounds)
-                                        .Child(
-                                            new Grid()
-                                                .ColumnDefinitions("*, 2*")
-                                                .Children(
-                                                    TabBar(vm, this).Grid(column: 0),
-                                                    PasswordsView(Feedback(vm), Feed(vm, this))
-                                                        .Grid(column: 1)
-                                                )
+                                    new Grid()
+                                        .SafeArea(SafeArea.InsetMask.All)
+                                        .ColumnDefinitions("*, 2*")
+                                        .Children(
+                                            TabBar(vm, this).Grid(column: 0),
+                                            PasswordsView(Feedback(vm), Feed(vm, this))
+                                                .Grid(column: 1)
                                         )
                             )
                     )
