@@ -43,15 +43,19 @@ public partial record CreateMasterPasswordModel(
             EncryptionKeyService.EncryptionKey = encKey;
 
             await SetResponse("Created - Redirecting...");
-            await Task.Delay(TimeSpan.FromSeconds(2), ct);
-            await _navigator.NavigateRouteAsync(this, "Passwords", cancellation: ct);
+            await MasterPassword.UpdateAsync(_ => "", ct);
+            await MasterPasswordReEntered.UpdateAsync(_ => "", ct);
+            await Task.Delay(TimeSpan.FromSeconds(1), ct);
+
+            await _navigator.NavigateViewModelAsync<PasswordsViewModel>(
+                this,
+                qualifier: Qualifiers.ClearBackStack,
+                cancellation: ct
+            );
         }
         catch (Exception ex)
         {
             await SetResponse($"Error: {ex.Message}");
-        }
-        finally
-        {
             await MasterPassword.UpdateAsync(_ => "", ct);
             await MasterPasswordReEntered.UpdateAsync(_ => "", ct);
             await SetLoading(false);
