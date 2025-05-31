@@ -17,7 +17,7 @@ public sealed partial class PasswordsPage : Page
                                         .RowDefinitions("*, *")
                                         .Children(
                                             new ScrollViewer().Content(
-                                                TabBar(vm, this).Grid(row: 0)
+                                                Functions(vm, this).Grid(row: 0)
                                             ),
                                             PasswordsView(Feedback(vm), Feed(vm, this)).Grid(row: 1)
                                         )
@@ -28,7 +28,7 @@ public sealed partial class PasswordsPage : Page
                                         .SafeArea(SafeArea.InsetMask.All)
                                         .ColumnDefinitions("*, 2*")
                                         .Children(
-                                            TabBar(vm, this).Grid(column: 0),
+                                            Functions(vm, this).Grid(column: 0),
                                             PasswordsView(Feedback(vm), Feed(vm, this))
                                                 .Grid(column: 1)
                                         )
@@ -37,34 +37,28 @@ public sealed partial class PasswordsPage : Page
         );
     }
 
-    private static StackPanel TabBar(PasswordsViewModel vm, PasswordsPage root) =>
+    private static StackPanel Functions(PasswordsViewModel vm, PasswordsPage root) =>
         new StackPanel()
             .Padding(70)
             .Spacing(20)
             .VerticalAlignment(VerticalAlignment.Stretch)
             .Children(
-                new Grid()
-                    .RowDefinitions("*, *, *, *, *")
-                    .RowSpacing(10)
+                new StackPanel()
+                    .Spacing(10)
                     .Children(
-                        new TextBlock().Grid(row: 0).Text("Add").FontSize(20),
+                        new TextBlock().Text("Add").FontSize(20),
                         new TextBox()
-                            .Grid(row: 1)
                             .PlaceholderText("Title")
                             .Text(x => x.Binding(() => vm.TitleOfPasswordToAdd).TwoWay()),
                         new PasswordBox()
-                            .Grid(row: 2)
                             .PlaceholderText("Password")
                             .Password(x => x.Binding(() => vm.PasswordToAdd).TwoWay()),
                         new Button()
-                            .Grid(row: 3)
                             .HorizontalAlignment(HorizontalAlignment.Stretch)
                             .Content("Generate Password")
                             .Command(() => vm.GeneratePassword),
                         new Button()
-                            .Grid(row: 4)
                             .HorizontalAlignment(HorizontalAlignment.Stretch)
-                            .VerticalAlignment(VerticalAlignment.Center)
                             .Content("Add")
                             .Command(x =>
                                 x.Source(root)
@@ -84,6 +78,19 @@ public sealed partial class PasswordsPage : Page
                                     .TwoWay()
                                     .UpdateSourceTrigger(UpdateSourceTrigger.PropertyChanged)
                             )
+                    ),
+                new StackPanel()
+                    .Spacing(10)
+                    .Children(
+                        new TextBlock().Text("Configure DB").FontSize(20),
+                        new Button()
+                            .Content("Import DB")
+                            .HorizontalAlignment(HorizontalAlignment.Stretch)
+                            .Command(() => vm.ImportDB),
+                        new Button()
+                            .Content("Export DB")
+                            .HorizontalAlignment(HorizontalAlignment.Stretch)
+                            .Command(() => vm.ExportDB)
                     )
             );
 

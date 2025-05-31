@@ -1,4 +1,5 @@
 using SQLite;
+using Windows.Storage.Pickers;
 
 namespace PasswordManager.Helpers;
 
@@ -18,5 +19,46 @@ public static class DbHelpers
     {
         string dbPath = _dataFolderPath;
         return new(dbPath);
+    }
+
+    public static async Task ImportDb()
+    {
+        await GetDbConnection().CloseAsync();
+        StorageFile dbFile = await _appDataFolder.GetFileAsync("Passwords.db");
+        FileOpenPicker fop = new() { SuggestedStartLocation = PickerLocationId.Downloads };
+        fop.FileTypeFilter.Add(".db");
+
+        StorageFile pickedFile = await fop.PickSingleFileAsync();
+        if (pickedFile != null)
+        {
+            await dbFile.DeleteAsync();
+            await pickedFile.MoveAsync(_appDataFolder);
+            await pickedFile.RenameAsync("Passwords.db");
+        }
+        else
+        {
+            throw new Exception("Operation cancelled");
+        }
+    }
+
+    public static async Task ExportDb()
+    {
+        StorageFile dbFile = await _appDataFolder.GetFileAsync("Passwords.db");
+        FileSavePicker fsp = new()
+        {
+            SuggestedStartLocation = PickerLocationId.Downloads,
+            SuggestedFileName = "Passwords_Backup",
+        };
+        fsp.FileTypeChoices.Add("Database", [".db"]);
+
+        StorageFile file = await fsp.PickSaveFileAsync();
+        if (file != null)
+        {
+            await dbFile.CopyAndReplaceAsync(file);
+        }
+        else
+        {
+            throw new Exception("Operation cancelled");
+        }
     }
 }

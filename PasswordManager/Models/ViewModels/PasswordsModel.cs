@@ -13,7 +13,6 @@ public partial record PasswordsModel(
     public IState<string> PasswordToAdd => State<string>.Empty(this);
     public IState<string> SearchTerm => State<string>.Value(this, () => "");
     public IState<string> Response => State<string>.Empty(this);
-
     public IListFeed<PasswordPreview> PasswordsFeed =>
         SearchTerm.SelectAsync(DBService.GetPasswords).AsListFeed();
     public IListState<PasswordPreview> Passwords => ListState.FromFeed(this, PasswordsFeed);
@@ -101,6 +100,34 @@ public partial record PasswordsModel(
             await DBService.DeletePassword(pwd.Id, ct);
             await Passwords.RemoveAllAsync(match: p => p.Id == pwd.Id, ct: ct);
             await Response.UpdateAsync(_ => $"Password '{pwd.Title}' deleted", ct);
+        }
+        catch (Exception ex)
+        {
+            await Response.UpdateAsync(_ => $"Error: {ex.Message}", ct);
+        }
+    }
+
+    public async Task ImportDB(CancellationToken ct)
+    {
+        try
+        {
+            await DbHelpers.ImportDb();
+            await Response.UpdateAsync(_ => "DB imported successfully", ct);
+            ImmutableList<PasswordPreview> passwordPreviews = await DBService.GetPasswords("", ct);
+            await Passwords.UpdateAsync(_ => passwordPreviews, ct);
+        }
+        catch (Exception ex)
+        {
+            await Response.UpdateAsync(_ => $"Error: {ex.Message}", ct);
+        }
+    }
+
+    public async Task ExportDB(CancellationToken ct)
+    {
+        try
+        {
+            await DbHelpers.ExportDb();
+            await Response.UpdateAsync(_ => "DB exported successfully", ct);
         }
         catch (Exception ex)
         {
