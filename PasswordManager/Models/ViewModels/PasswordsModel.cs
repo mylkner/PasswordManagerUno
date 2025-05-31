@@ -13,9 +13,13 @@ public partial record PasswordsModel(
     public IState<string> PasswordToAdd => State<string>.Empty(this);
     public IState<string> SearchTerm => State<string>.Value(this, () => "");
     public IState<string> Response => State<string>.Empty(this);
+    public IState<bool> ShowFunctions => State<bool>.Value(this, () => false);
     public IListFeed<PasswordPreview> PasswordsFeed =>
         SearchTerm.SelectAsync(DBService.GetPasswords).AsListFeed();
     public IListState<PasswordPreview> Passwords => ListState.FromFeed(this, PasswordsFeed);
+
+    public async Task ChangeView(CancellationToken ct) =>
+        await ShowFunctions.UpdateAsync(cur => !cur, ct);
 
     public async Task GeneratePassword(CancellationToken ct) =>
         await PasswordToAdd.UpdateAsync(_ => EncryptionService.RandomPasswordGenerator(), ct);
@@ -88,6 +92,7 @@ public partial record PasswordsModel(
         {
             await TitleOfPasswordToAdd.UpdateAsync(_ => "", ct);
             await PasswordToAdd.UpdateAsync(_ => "", ct);
+            await ChangeView(ct);
         }
     }
 
@@ -115,10 +120,12 @@ public partial record PasswordsModel(
             await Response.UpdateAsync(_ => "DB imported successfully", ct);
             ImmutableList<PasswordPreview> passwordPreviews = await DBService.GetPasswords("", ct);
             await Passwords.UpdateAsync(_ => passwordPreviews, ct);
+            await ChangeView(ct);
         }
         catch (Exception ex)
         {
             await Response.UpdateAsync(_ => $"Error: {ex.Message}", ct);
+            await ChangeView(ct);
         }
     }
 
@@ -128,10 +135,12 @@ public partial record PasswordsModel(
         {
             await DbHelpers.ExportDb();
             await Response.UpdateAsync(_ => "DB exported successfully", ct);
+            await ChangeView(ct);
         }
         catch (Exception ex)
         {
             await Response.UpdateAsync(_ => $"Error: {ex.Message}", ct);
+            await ChangeView(ct);
         }
     }
 }
