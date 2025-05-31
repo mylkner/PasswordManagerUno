@@ -164,7 +164,7 @@ public sealed partial class PasswordsPage : Page
             if (clickedItem is not null)
             {
                 PasswordsViewModel? vm = root.DataContext as PasswordsViewModel;
-                vm!.DecryptPassword.Execute(clickedItem.Id);
+                vm!.DecryptPassword.Execute(clickedItem);
             }
         };
 

@@ -21,12 +21,12 @@ public partial record PasswordsModel(
     public async Task GeneratePassword(CancellationToken ct) =>
         await PasswordToAdd.UpdateAsync(_ => EncryptionService.RandomPasswordGenerator(), ct);
 
-    public async Task DecryptPassword(int id, CancellationToken ct)
+    public async Task DecryptPassword(PasswordPreview pwd, CancellationToken ct)
     {
         try
         {
             await Response.UpdateAsync(_ => "", ct);
-            PasswordEncrypted pwdEnc = await DBService.GetEncryptedPassword(id, ct);
+            PasswordEncrypted pwdEnc = await DBService.GetEncryptedPassword(pwd.Id, ct);
             string decryptedPassword = EncryptionService.DecryptPassword(
                 pwdEnc.EncryptedPassword,
                 pwdEnc.Iv,
@@ -36,7 +36,7 @@ public partial record PasswordsModel(
             DataPackage data = new();
             data.SetText(decryptedPassword);
             Clipboard.SetContent(data);
-            await Response.UpdateAsync(_ => "Password copied to clipboard", ct);
+            await Response.UpdateAsync(_ => $"Password copied '{pwd.Title}' to clipboard", ct);
         }
         catch (Exception ex)
         {
