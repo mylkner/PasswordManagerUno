@@ -23,7 +23,7 @@ public sealed partial class MainPage : Page
                                             .Text("Enter your master password: "),
                                         new PasswordBox()
                                             .HorizontalAlignment(HorizontalAlignment.Stretch)
-                                            .MaxWidth(300)
+                                            .MaxWidth(400)
                                             .PasswordRevealMode(PasswordRevealMode.Hidden)
                                             .PlaceholderText("Password...")
                                             .Password(x =>
@@ -43,6 +43,7 @@ public sealed partial class MainPage : Page
                                             )
                                             .Command(() => vm.VerifyButtonCommand),
                                         new TextBlock()
+                                            .MaxWidth(400)
                                             .HorizontalAlignment(HorizontalAlignment.Stretch)
                                             .Text(() => vm.VerificationResponse)
                                             .Foreground(
