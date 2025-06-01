@@ -122,20 +122,22 @@ public sealed partial class PasswordsPage : Page
                 )
         );
 
-    private static ScrollViewer PasswordsView(TextBlock feedback, FeedView feed, int padding) =>
-        new ScrollViewer().Content(
-            new StackPanel()
-                .Padding(padding)
-                .Spacing(20)
-                .Children(
-                    new TextBlock()
-                        .VerticalAlignment(VerticalAlignment.Stretch)
-                        .FontSize(20)
-                        .Text("Passwords"),
-                    feedback,
-                    feed
-                )
-        );
+    private static Grid PasswordsView(TextBlock feedback, FeedView feed, int padding) =>
+        new Grid()
+            .RowDefinitions("Auto, Auto, *")
+            .HorizontalAlignment(HorizontalAlignment.Stretch)
+            .VerticalAlignment(VerticalAlignment.Stretch)
+            .Padding(padding)
+            .RowSpacing(20)
+            .Children(
+                new TextBlock()
+                    .Grid(row: 0)
+                    .VerticalAlignment(VerticalAlignment.Stretch)
+                    .FontSize(20)
+                    .Text("Passwords"),
+                feedback.Grid(row: 1),
+                new ScrollViewer().Grid(row: 2).Content(feed)
+            );
 
     private static TextBlock Feedback(PasswordsViewModel vm) =>
         new TextBlock()

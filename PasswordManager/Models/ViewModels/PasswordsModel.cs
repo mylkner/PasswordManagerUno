@@ -65,7 +65,7 @@ public partial record PasswordsModel(
             if (titleOfPasswordToAdd.Length > 20)
                 throw new Exception(message: "Title may not be greater than 20 characters");
 
-            if (passwordToAdd.Length > 21)
+            if (passwordToAdd.Length > 30)
                 throw new Exception(message: "Password may not be greater than 21 characters");
 
             (byte[] encryptedPassword, byte[] iv) = EncryptionService.EncryptPassword(
@@ -92,7 +92,7 @@ public partial record PasswordsModel(
         {
             await TitleOfPasswordToAdd.UpdateAsync(_ => "", ct);
             await PasswordToAdd.UpdateAsync(_ => "", ct);
-            await ChangeView(ct);
+            await ShowFunctions.UpdateAsync(_ => false, ct);
         }
     }
 
@@ -120,12 +120,12 @@ public partial record PasswordsModel(
             await Response.UpdateAsync(_ => "DB imported successfully", ct);
             ImmutableList<PasswordPreview> passwordPreviews = await DBService.GetPasswords("", ct);
             await Passwords.UpdateAsync(_ => passwordPreviews, ct);
-            await ChangeView(ct);
+            await ShowFunctions.UpdateAsync(_ => false, ct);
         }
         catch (Exception ex)
         {
             await Response.UpdateAsync(_ => $"Error: {ex.Message}", ct);
-            await ChangeView(ct);
+            await ShowFunctions.UpdateAsync(_ => false, ct);
         }
     }
 
@@ -135,12 +135,12 @@ public partial record PasswordsModel(
         {
             await DbHelpers.ExportDb();
             await Response.UpdateAsync(_ => "DB exported successfully", ct);
-            await ChangeView(ct);
+            await ShowFunctions.UpdateAsync(_ => false, ct);
         }
         catch (Exception ex)
         {
             await Response.UpdateAsync(_ => $"Error: {ex.Message}", ct);
-            await ChangeView(ct);
+            await ShowFunctions.UpdateAsync(_ => false, ct);
         }
     }
 }
